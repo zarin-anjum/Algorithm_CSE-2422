@@ -10,7 +10,7 @@ int getMax(int arr[], int n) {
 }
 
 void countingSort(int arr[], int n, int exp) {
-    int output[n]; // Output array
+    int output[n];
     int count[10] = {0};
 
     for (int i = 0; i < n; i++)
