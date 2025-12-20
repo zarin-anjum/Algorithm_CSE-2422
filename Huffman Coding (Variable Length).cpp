@@ -21,45 +21,59 @@ struct Compare {
     }
 };
 
-void printCodes(Node* root, string code) {
+void generateCodes(Node* root, string code, map<char, string>& huffman) {
     if (!root) return;
 
-    if (root->ch != '$') {
-        cout << root->ch << " : " << code << endl;
-    }
+    if (root->ch != '$')
+        huffman[root->ch] = code;
 
-    printCodes(root->left, code + "0");
-    printCodes(root->right, code + "1");
+    generateCodes(root->left, code + "0", huffman);
+    generateCodes(root->right, code + "1", huffman);
 }
 
 int main() {
     string text;
-    cout << "Enter a string: ";
+    cout << "Enter the text: ";
     cin >> text;
 
     map<char, int> freq;
     for (char c : text)
         freq[c]++;
 
-    priority_queue<Node*, vector<Node*>, Compare> pq;
+    cout << "Frequencies:\n";
+    for (auto it : freq)
+        cout << it.first << " : " << it.second << endl;
 
-    for (auto pair : freq) {
-        pq.push(new Node(pair.first, pair.second));
-    }
+    priority_queue<Node*, vector<Node*>, Compare> pq;
+    for (auto it : freq)
+        pq.push(new Node(it.first, it.second));
 
     while (pq.size() > 1) {
         Node* left = pq.top(); pq.pop();
         Node* right = pq.top(); pq.pop();
 
-        Node* newNode = new Node('$', left->freq + right->freq);
-        newNode->left = left;
-        newNode->right = right;
+        Node* parent = new Node('$', left->freq + right->freq);
+        parent->left = left;
+        parent->right = right;
 
-        pq.push(newNode);
+        pq.push(parent);
     }
 
+    map<char, string> huffmanCode;
+    generateCodes(pq.top(), "", huffmanCode);
+
     cout << "\nHuffman Codes:\n";
-    printCodes(pq.top(), "");
+    for (auto it : huffmanCode)
+        cout << it.first << " : " << it.second << endl;
+
+    int original = text.length() * 8;
+    int compressed = 0;
+
+    for (auto it : freq)
+        compressed += it.second * huffmanCode[it.first].length();
+
+    cout << "\nOriginal Length : " << original << endl;
+    cout << "Compressed Length : " << compressed << endl;
 
     return 0;
 }
