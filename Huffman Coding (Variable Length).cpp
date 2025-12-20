@@ -72,8 +72,17 @@ int main() {
     for (auto it : freq)
         compressed += it.second * huffmanCode[it.first].length();
 
+    int table_bits = 0;
+
+    for (auto it : freq) {
+        table_bits += 8;
+        table_bits += huffmanCode[it.first].length();
+    }
+
     cout << "\nOriginal Length : " << original << endl;
     cout << "Compressed Length : " << compressed << endl;
+    cout << "Table : " << table_bits << endl;
+    cout << "New Length : " << compressed + table_bits << endl;
 
     return 0;
 }
